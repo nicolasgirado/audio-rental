@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const userRouter = require('./routers/user.router');
-const loginRouter = require('./routers/login.router');
+const usuarioRoutes = require('./routes/usuario.routes');
+const equipoRoutes = require('./routes/equipo.routes');
+const rubroRoutes = require('./routes/rubro.routes');
+const lugarRoutes = require('./routes/lugar.routes');
+const excelRoutes = require('./routes/excel.routes');
 
 const app = express();
 
@@ -11,9 +14,12 @@ const port = process.env.PORT;
 // Parser
 app.use(express.json());
 
-// Routers
-app.use(userRouter);
-app.use(loginRouter);
+// Routes
+app.use(usuarioRoutes);
+app.use(equipoRoutes);
+app.use(rubroRoutes);
+app.use(lugarRoutes);
+app.use(excelRoutes);
 
 // MongoDB
 mongoose.connection.openUri(
