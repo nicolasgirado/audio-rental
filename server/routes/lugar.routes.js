@@ -10,7 +10,7 @@ const Lugar = require('../models/lugar.model');
 -------------------*/
 
 // Crear lugar
-router.post('/lugares', auth, async (req, res) => {
+router.post('/lugares', auth.verificaToken, async (req, res) => {
 	try {
 		const lugar = new Lugar({
 			...req.body,
@@ -24,7 +24,7 @@ router.post('/lugares', auth, async (req, res) => {
 });
 
 // Obtener todos los lugares
-router.get('/lugares', auth, async (req, res) => {
+router.get('/lugares', auth.verificaToken, async (req, res) => {
 	try {
 		const lugares = await Lugar.find({}).populate('usuario', 'nombre').exec();
 		if (!lugares) {
@@ -37,10 +37,10 @@ router.get('/lugares', auth, async (req, res) => {
 });
 
 // Actualizar lugar por id
-router.patch('/lugares/:id', auth, async (req, res) => {
+router.patch('/lugares/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	const updates = Object.keys(req.body);
-	const allowedUpdates = [ 'nombre', 'salones' ];
+	const allowedUpdates = [ 'nombre' ];
 	const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Id de lugar inválida!' });
@@ -62,7 +62,7 @@ router.patch('/lugares/:id', auth, async (req, res) => {
 });
 
 // Borrar lugar por id
-router.delete('/lugares/:id', auth, async (req, res) => {
+router.delete('/lugares/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Id de lugar inválida!' });

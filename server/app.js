@@ -1,9 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const usuarioRoutes = require('./routes/usuario.routes');
-const equipoRoutes = require('./routes/equipo.routes');
+const loginRoutes = require('./routes/login.routes');
 const rubroRoutes = require('./routes/rubro.routes');
+const equipoRoutes = require('./routes/equipo.routes');
+const equipoPrecioRoutes = require('./routes/equipoPrecio.routes');
 const lugarRoutes = require('./routes/lugar.routes');
+const salonRoutes = require('./routes/salon.routes');
+const salonPackRoutes = require('./routes/salonPack.routes');
+const eventoRoutes = require('./routes/evento.routes');
 const excelRoutes = require('./routes/excel.routes');
 
 const app = express();
@@ -14,11 +19,27 @@ const port = process.env.PORT;
 // Parser
 app.use(express.json());
 
+// CORS
+app.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+	res.header(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+	);
+	res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+	next();
+});
+
 // Routes
 app.use(usuarioRoutes);
-app.use(equipoRoutes);
+app.use(loginRoutes);
 app.use(rubroRoutes);
+app.use(equipoRoutes);
+app.use(equipoPrecioRoutes);
 app.use(lugarRoutes);
+app.use(salonRoutes);
+app.use(salonPackRoutes);
+app.use(eventoRoutes);
 app.use(excelRoutes);
 
 // MongoDB

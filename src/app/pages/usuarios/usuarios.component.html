@@ -1,0 +1,26 @@
+<h2>Usuarios: <small>TotalUsuarios</small></h2>
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let usuario of usuarios; let i = index;">
+                <td>{{ i + 1 }}</td>
+                <td>{{ usuario.nombre }}</td>
+                <td>
+                    <!-- <button (click)="guardarUsuario(usuario)" class="btn btn-primary mr-1">
+                        <i class="fa fa-save"></i>
+                    </button>
+                    <button (click)="borrarUsuario(usuario)" class="btn btn-danger">
+                        <i class="fa fa-trash-o"></i>
+                    </button> -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

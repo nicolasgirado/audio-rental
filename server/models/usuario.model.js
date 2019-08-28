@@ -7,6 +7,11 @@ const bcrypt = require('bcryptjs');
 	Schema Usuario
 -------------------*/
 
+const rolesValidos = {
+	values: [ 'ADMIN_ROLE', 'USER_ROLE' ],
+	message: '{VALUE} no es un rol permitido'
+};
+
 const usuarioSchema = new mongoose.Schema(
 	{
 		nombre: {
@@ -37,6 +42,12 @@ const usuarioSchema = new mongoose.Schema(
 					throw new Error('La contraseña no puede contener la palabra "password"');
 				}
 			}
+		},
+		role: {
+			type: String,
+			required: true,
+			default: 'USER_ROLE',
+			enum: rolesValidos
 		},
 		tokens: [
 			{
@@ -92,7 +103,9 @@ usuarioSchema.statics.findByCredentials = async (email, password) => {
 // Generar token de autenticación
 usuarioSchema.methods.generateAuthToken = async function() {
 	const usuario = this;
-	const token = jwt.sign({ _id: usuario._id.toString() }, process.env.JWT_SECRET, { expiresIn: 86400 });
+	const token = jwt.sign({ _id: usuario._id.toString() }, process.env.JWT_SECRET, {
+		expiresIn: 86400
+	});
 	usuario.tokens = usuario.tokens.concat({ token });
 	await usuario.save();
 	return token;

@@ -10,7 +10,7 @@ const Rubro = require('../models/rubro.model');
 -------------------*/
 
 // Crear rubro
-router.post('/rubros', auth, async (req, res) => {
+router.post('/rubros', auth.verificaToken, async (req, res) => {
 	try {
 		const rubros = [];
 		const body = req.body;
@@ -28,7 +28,7 @@ router.post('/rubros', auth, async (req, res) => {
 });
 
 // Obtener todos los rubros
-router.get('/rubros', auth, async (req, res) => {
+router.get('/rubros', auth.verificaToken, async (req, res) => {
 	try {
 		const rubros = await Rubro.find().populate('usuario', 'nombre').exec();
 		if (!rubros) {
@@ -41,7 +41,7 @@ router.get('/rubros', auth, async (req, res) => {
 });
 
 // Actualizar rubro por id
-router.patch('/rubros/:id', auth, async (req, res) => {
+router.patch('/rubros/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	const updates = Object.keys(req.body);
 	const allowedUpdates = [ 'nombre', 'rubro' ];
@@ -66,7 +66,7 @@ router.patch('/rubros/:id', auth, async (req, res) => {
 });
 
 // Borrar rubro por id
-router.delete('/rubros/:id', auth, async (req, res) => {
+router.delete('/rubros/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Id de rubro inválida!' });
@@ -84,7 +84,7 @@ router.delete('/rubros/:id', auth, async (req, res) => {
 });
 
 // Borrar todos los rubros
-router.delete('/rubros', auth, async (req, res) => {
+router.delete('/rubros', auth.verificaToken, async (req, res) => {
 	try {
 		await Rubro.deleteMany({});
 		res.status(200).send({ message: 'Rubros eliminados!' });

@@ -10,7 +10,7 @@ const Equipo = require('../models/equipo.model');
 -------------------*/
 
 // Crear equipo
-router.post('/equipos', auth, async (req, res) => {
+router.post('/equipos', auth.verificaToken, async (req, res) => {
 	try {
 		const equipo = new Equipo({
 			...req.body,
@@ -24,7 +24,7 @@ router.post('/equipos', auth, async (req, res) => {
 });
 
 // Obtener todos los equipos
-router.get('/equipos', auth, async (req, res) => {
+router.get('/equipos', auth.verificaToken, async (req, res) => {
 	try {
 		const equipos = await Equipo.find().populate('usuario', 'nombre').populate('rubro', 'nombre').exec();
 		if (!equipos) {
@@ -37,7 +37,7 @@ router.get('/equipos', auth, async (req, res) => {
 });
 
 // Actualizar equipo por id
-router.patch('/equipos/:id', auth, async (req, res) => {
+router.patch('/equipos/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	const updates = Object.keys(req.body);
 	const allowedUpdates = [ 'nombre', 'rubro' ];
@@ -62,7 +62,7 @@ router.patch('/equipos/:id', auth, async (req, res) => {
 });
 
 // Borrar equipo por id
-router.delete('/equipos/:id', auth, async (req, res) => {
+router.delete('/equipos/:id', auth.verificaToken, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Id de equipo inválida!' });
@@ -80,7 +80,7 @@ router.delete('/equipos/:id', auth, async (req, res) => {
 });
 
 // Borrar todos los equipos
-router.delete('/equipos', auth, async (req, res) => {
+router.delete('/equipos', auth.verificaToken, async (req, res) => {
 	try {
 		await Equipo.deleteMany({});
 		res.status(200).send({ mensaje: 'Equipos eliminados!' });

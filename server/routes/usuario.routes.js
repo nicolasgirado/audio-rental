@@ -14,7 +14,7 @@ const sharp = require('sharp');
 -------------------*/
 
 // Crear usuario
-router.post('/usuarios', async (req, res) => {
+router.post('/usuarios', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	const usuario = new Usuario(req.body);
 	try {
 		await usuario.save();
@@ -25,7 +25,7 @@ router.post('/usuarios', async (req, res) => {
 });
 
 // Obtener todos los usuarios
-router.get('/usuarios', auth, async (req, res) => {
+router.get('/usuarios', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	try {
 		const usuarios = await Usuario.find();
 		if (!usuarios) {
@@ -37,17 +37,25 @@ router.get('/usuarios', auth, async (req, res) => {
 	}
 });
 
-// Obtener perfil del usuario
-router.get('/usuarios/me', auth, async (req, res) => {
+// Obtener usuario por id
+router.get('/usuarios/:id', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
+	const _id = req.params.id;
+	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
+		return res.status(400).send({ error: 'Id de usuario inválido!' });
+	}
 	try {
-		res.send(req.usuario);
+		const usuario = await Usuario.findOne({ _id });
+		if (!usuario) {
+			return res.status(404).send({ error: 'Usuario con el id ' + _id + ' no encontrado!' });
+		}
+		res.send(usuario);
 	} catch (e) {
 		res.status(500).send({ error: e.message });
 	}
 });
 
 // Actualizar usuario por id
-router.patch('/usuarios/:id', auth, async (req, res) => {
+router.patch('/usuarios/:id', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	const _id = req.params.id;
 	const updates = Object.keys(req.body);
 	const allowedUpdates = [ 'nombre', 'email', 'password' ];
@@ -72,7 +80,7 @@ router.patch('/usuarios/:id', auth, async (req, res) => {
 });
 
 // Borrar usuario por id
-router.delete('/usuarios/:id', auth, async (req, res) => {
+router.delete('/usuarios/:id', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	const _id = req.params.id;
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Id de usuario inválido!' });
@@ -103,19 +111,24 @@ const upload = multer({
 });
 
 // Subir avatar
-router.post('/usuarios/me/avatar', auth, upload.single('avatar'), async (req, res) => {
-	try {
-		const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
-		req.usuario.avatar = buffer;
-		await req.usuario.save();
-		res.status(200).send({ message: 'Avatar successfully uploaded!' });
-	} catch (e) {
-		res.status(400).send({ error: e.message });
+router.post(
+	'/usuarios/me/avatar',
+	[ auth.verificaToken, auth.verificaAdminUsuario ],
+	upload.single('avatar'),
+	async (req, res) => {
+		try {
+			const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
+			req.usuario.avatar = buffer;
+			await req.usuario.save();
+			res.status(200).send({ message: 'Avatar successfully uploaded!' });
+		} catch (e) {
+			res.status(400).send({ error: e.message });
+		}
 	}
-});
+);
 
 // Borrar avatar
-router.delete('/usuarios/me/avatar', auth, async (req, res) => {
+router.delete('/usuarios/me/avatar', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	try {
 		req.usuario.avatar = undefined;
 		await req.usuario.save();
@@ -126,7 +139,7 @@ router.delete('/usuarios/me/avatar', auth, async (req, res) => {
 });
 
 // Obtener avatar por id
-router.get('/usuarios/:id/avatar', auth, async (req, res) => {
+router.get('/usuarios/:id/avatar', [ auth.verificaToken, auth.verificaAdminUsuario ], async (req, res) => {
 	const _id = req.params.id;
 	if (!_id.match(/^[0-9a-fA-F]{24}$/)) {
 		return res.status(400).send({ error: 'Invalid id!' });
@@ -140,45 +153,6 @@ router.get('/usuarios/:id/avatar', auth, async (req, res) => {
 		res.send(usuario.avatar);
 	} catch (e) {
 		res.status(404).send({ error: e.message });
-	}
-});
-
-/*------------------
-	Login y Logout
--------------------*/
-
-// Iniciar sesión
-router.post('/login', async (req, res) => {
-	try {
-		const usuario = await Usuario.findByCredentials(req.body.email, req.body.password);
-		const token = await usuario.generateAuthToken();
-		res.send({ usuario, token });
-	} catch (e) {
-		res.status(400).send({ error: e.message });
-	}
-});
-
-// Cerrar sesión actual
-router.post('/logout', auth, async (req, res) => {
-	try {
-		req.usuario.tokens = req.usuario.tokens.filter((token) => {
-			return token.token !== req.token;
-		});
-		await req.usuario.save();
-		res.status(200).send({ message: 'Successful logout!' });
-	} catch (e) {
-		res.status(500).send({ error: e.message });
-	}
-});
-
-// Cerrar todas las sesiones abiertas
-router.post('/logoutAll', auth, async (req, res) => {
-	try {
-		req.usuario.tokens = [];
-		await req.usuario.save();
-		res.status(200).send({ message: 'Successful logouts!' });
-	} catch (e) {
-		res.status(500).send({ error: e.message });
 	}
 });
 

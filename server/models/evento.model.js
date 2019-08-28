@@ -2,24 +2,19 @@ const mongoose = require('mongoose');
 
 const eventoSchema = new mongoose.Schema(
 	{
-		cliente: {
-			type: String
-		},
 		lugar: {
-			type: String
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Lugar'
+		},
+		salon: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Salon'
 		},
 		fechaEvento: {
 			type: Date,
 			required: true
-		},
-		DJ: {
-			type: String
-		},
-		Responsable: {
-			type: String
-		},
-		promoViernes: {
-			type: Boolean
 		},
 		precioPack: Number
 	},
