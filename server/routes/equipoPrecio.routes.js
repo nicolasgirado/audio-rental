@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de equipoPrecios
 const auth = require('../middlewares/auth');
 const EquipoPrecio = require('../models/equipoPrecio.model');
+
+const router = new express.Router();
 
 /*---------------------
 	CRUD EquipoPrecio

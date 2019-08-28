@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de salones
 const auth = require('../middlewares/auth');
 const Salon = require('../models/salon.model');
+
+const router = new express.Router();
 
 /*------------------
 	CRUD Salon

@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de usuarios
 const Usuario = require('../models/usuario.model');
 const auth = require('../middlewares/auth');
+
+const router = new express.Router();
 
 /*------------------
 	Login y Logout

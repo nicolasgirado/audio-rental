@@ -1,13 +1,11 @@
 const express = require('express');
-const router = new express.Router();
+const multer = require('multer'); // subida de archivos (avatar)
+const sharp = require('sharp'); // edición de imágenes (avatar)
 
-// Autenticación y modelo de usuarios
 const Usuario = require('../models/usuario.model');
 const auth = require('../middlewares/auth');
 
-// Plugins para subir y editar imágenes
-const multer = require('multer');
-const sharp = require('sharp');
+const router = new express.Router();
 
 /*------------------
 	CRUD Usuario

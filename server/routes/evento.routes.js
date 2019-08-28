@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de eventos
 const auth = require('../middlewares/auth');
 const Evento = require('../models/evento.model');
+
+const router = new express.Router();
 
 /*------------------
 	CRUD Evento

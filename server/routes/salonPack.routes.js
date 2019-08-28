@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de salonPacks
 const auth = require('../middlewares/auth');
 const SalonPack = require('../models/salonPack.model');
+
+const router = new express.Router();
 
 /*------------------
 	CRUD SalonPack

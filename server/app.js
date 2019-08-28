@@ -1,5 +1,11 @@
+// Express
 const express = require('express');
+const app = express();
+// Mongoose
 const mongoose = require('mongoose');
+// Port
+const port = process.env.PORT;
+// Routes
 const usuarioRoutes = require('./routes/usuario.routes');
 const loginRoutes = require('./routes/login.routes');
 const rubroRoutes = require('./routes/rubro.routes');
@@ -11,12 +17,7 @@ const salonPackRoutes = require('./routes/salonPack.routes');
 const eventoRoutes = require('./routes/evento.routes');
 const excelRoutes = require('./routes/excel.routes');
 
-const app = express();
-
-// Puerto
-const port = process.env.PORT;
-
-// Parser
+// Express json parser
 app.use(express.json());
 
 // CORS
@@ -42,7 +43,7 @@ app.use(salonPackRoutes);
 app.use(eventoRoutes);
 app.use(excelRoutes);
 
-// MongoDB
+// Mongoose
 mongoose.connection.openUri(
 	process.env.MONGODB_URL,
 	{ useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false },
@@ -55,7 +56,7 @@ mongoose.connection.openUri(
 	}
 );
 
-// Inicializar
+// Express
 app.listen(port, () => {
 	console.log('Express app corriendo en el puerto ' + port + ': \x1b[36m%s\x1b[0m', 'online');
 });

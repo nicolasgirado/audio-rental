@@ -1,9 +1,9 @@
 const express = require('express');
-const router = new express.Router();
 
-// Autenticación y modelo de rubros
 const auth = require('../middlewares/auth');
 const Rubro = require('../models/rubro.model');
+
+const router = new express.Router();
 
 /*------------------
 	CRUD Rubro

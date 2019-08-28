@@ -1,15 +1,15 @@
 const express = require('express');
-const router = new express.Router();
-const multer = require('multer');
-const XLSX = require('xlsx');
+const multer = require('multer'); // subida de archivos (excel)
+const XLSX = require('xlsx'); // lectura y exportación de archivos excel
 
-// Autenticación y modelos
-const auth = require('../middlewares/auth');
 const Rubro = require('../models/rubro.model');
 const Equipo = require('../models/equipo.model');
 const Salon = require('../models/salon.model');
 const SalonPack = require('../models/salonPack.model');
 const EquipoPrecio = require('../models/equipoPrecio.model');
+const auth = require('../middlewares/auth');
+
+const router = new express.Router();
 
 const upload = multer({
 	limits: { fileSize: 1000000 },
@@ -21,8 +21,10 @@ const upload = multer({
 	}
 });
 
+// Objetivo: Actualización batch y exportación a excel de colecciones (ej. lista de precios)
+
 // Excel-Import
-// Importante: Notar que se realiza un insertMany en la collection (ingresar el id es opcional)
+// Notar que se realiza un insertMany en la collección (ingresar el id es opcional)
 router.post(
 	'/excel-import/:coll',
 	[ auth.verificaToken, auth.verificaAdminUsuario ],
