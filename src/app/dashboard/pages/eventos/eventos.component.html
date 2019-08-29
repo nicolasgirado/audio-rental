@@ -1,0 +1,61 @@
+<div *ngIf="loading">
+    <mat-spinner></mat-spinner>
+</div>
+
+<mat-card class="mat-elevation-z8">
+
+    <div *ngIf="!loading" class="example-container">
+
+        <mat-card-header>
+            <mat-card-title>
+                <h2>Eventos</h2>
+            </mat-card-title>
+        </mat-card-header>
+
+        <div class="example-header">
+
+            <mat-form-field>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filtrar">
+            </mat-form-field>
+
+        </div>
+
+        <div class="example-table-container">
+
+            <table mat-table [dataSource]="dataSource" matSort class="example-table">
+
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>No.</th>
+                    <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="lugar">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>lugar</th>
+                    <td mat-cell *matCellDef="let evento">{{ evento.lugar['nombre'] }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="salon">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Salón</th>
+                    <td mat-cell *matCellDef="let evento">{{ evento.salon['nombre'] }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="fechaEvento">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                    <td mat-cell *matCellDef="let evento">{{ evento.fechaEvento | date }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="precioPack">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Pack</th>
+                    <td mat-cell *matCellDef="let evento">{{ evento.precioPack | currency}}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+
+            <mat-paginator [pageSize]="15" [pageSizeOptions]="[15, 30, 45]"></mat-paginator>
+
+        </div>
+    </div>
+</mat-card>

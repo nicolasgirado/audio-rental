@@ -1,0 +1,45 @@
+<mat-sidenav-container class="app-sidenav-container">
+
+    <mat-sidenav #sidenav class="app-sidenav" [class.mat-elevation-z10]="true" [opened]="!mobileQuery.matches"
+        [mode]="mobileQuery.matches ? 'over' : 'side'">
+
+        <mat-toolbar color="primary">
+            Menu
+        </mat-toolbar>
+
+        <mat-nav-list>
+            <div *ngFor="let menu of loginService.menu">
+
+                <a mat-list-item *ngIf="!menu.submenu" [routerLink]="[ menu.url ]" routerLinkActive="router-link-active">
+                   <mat-icon matListIcon>{{ menu.icono }}</mat-icon><span> {{ menu.titulo }}</span>
+                </a>
+
+                <mat-expansion-panel [class.mat-elevation-z0]="true" *ngIf="menu.submenu">
+
+                    <mat-expansion-panel-header>
+                        <mat-list-item>
+                            <mat-icon matListIcon>{{ menu.icono }}</mat-icon><span> {{ menu.titulo }}</span>
+                        </mat-list-item>
+                    </mat-expansion-panel-header>
+
+                    <a *ngFor="let submenu of menu.submenu" mat-list-item [routerLink]="[ submenu.url ]" routerLinkActive="router-link-active">
+                        <mat-icon matListIcon>{{ submenu.icono }}</mat-icon><span> {{ submenu.titulo }}</span>
+                    </a>
+
+                </mat-expansion-panel>
+            </div>
+        </mat-nav-list>
+
+    </mat-sidenav>
+
+    <div class="app-sidenav-content">
+
+        <app-toolbar (toggleSidenav)="sidenav.toggle()"></app-toolbar>
+
+        <div class="wrapper">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+
+</mat-sidenav-container>

@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { map, catchError } from 'rxjs/operators';
+
 import { environment } from '../../../environments/environment';
 import { Usuario } from '../../models/usuario.model';
-import { map, catchError } from 'rxjs/operators';
+
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 
 @Injectable({
 	providedIn: 'root'

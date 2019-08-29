@@ -1,15 +1,16 @@
+// Angular
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+// Services
 import { UsuarioService } from './usuario/usuario.service';
 import { LoginService } from './login/login.service';
-import { EquipoService } from './equipo/equipo.service';
-import { EventoService } from './evento/evento.service';
+// Guards
 import { AdminGuard } from './guards/admin.guard';
 
 @NgModule({
 	declarations: [],
 	imports: [ CommonModule, HttpClientModule ],
-	providers: [ UsuarioService, LoginService, EquipoService, EventoService, AdminGuard ]
+	providers: [ UsuarioService, LoginService, AdminGuard ]
 })
 export class ServiceModule {}

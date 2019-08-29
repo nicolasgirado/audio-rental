@@ -57,25 +57,22 @@ router.post('/logoutAll', auth.verificaToken, async (req, res) => {
 function obtenerMenu(role) {
 	var menu = [
 		{
-			titulo: 'Principal',
-			icono: 'fa fa-home',
-			submenu: [
-				{
-					titulo: 'Dashboard',
-					url: '/dashboard'
-				},
-				{
-					titulo: 'Eventos',
-					url: '/eventos'
-				}
-			]
+			titulo: 'Home',
+			icono: 'home',
+			url: '/home'
+		},
+		{
+			titulo: 'Eventos',
+			icono: 'event',
+			url: '/eventos'
 		},
 		{
 			titulo: 'Mantenimientos',
-			icono: 'fa fa-wrench',
+			icono: 'build',
 			submenu: [
 				{
 					titulo: 'Equipos',
+					icono: 'speaker',
 					url: '/equipos'
 				}
 			]
@@ -83,8 +80,9 @@ function obtenerMenu(role) {
 	];
 
 	if (role === 'ADMIN_ROLE') {
-		menu[1].submenu.unshift({
+		menu[2].submenu.unshift({
 			titulo: 'Usuarios',
+			icono: 'supervisor_account',
 			url: '/usuarios'
 		});
 	}
