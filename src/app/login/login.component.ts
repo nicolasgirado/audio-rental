@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginService } from '../services/login/login.service';
-import { Usuario } from '../models/usuario.model';
 import { Router } from '@angular/router';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+
+import { AuthService } from '../services/auth.service';
 
 @Component({
 	selector: 'app-login',
@@ -10,25 +10,45 @@ import { NgForm } from '@angular/forms';
 	styleUrls: [ './login.component.scss' ]
 })
 export class LoginComponent implements OnInit {
-	email = '';
-	recuerdame = false;
+	loginForm: FormGroup;
+	email = new FormControl('', [
+		Validators.required,
+		Validators.email,
+		Validators.minLength(3),
+		Validators.maxLength(100)
+	]);
+	password = new FormControl('', [ Validators.required, Validators.minLength(7) ]);
+	recordarme = new FormControl(false);
 
-	constructor(public loginService: LoginService, public router: Router) {}
+	constructor(public authService: AuthService, public router: Router, private formBuilder: FormBuilder) {}
 
 	ngOnInit() {
-		this.email = localStorage.getItem('email') || '';
-		if (this.email.length > 1) {
-			this.recuerdame = true;
+		if (this.authService.isLoggedIn) {
+			this.router.navigate([ '/' ]);
+		}
+		this.loginForm = this.formBuilder.group({
+			email: this.email,
+			password: this.password,
+			recordarme: this.recordarme
+		});
+		const email = localStorage.getItem('email');
+		if (email) {
+			this.loginForm.patchValue({ email });
+			this.loginForm.patchValue({ recordarme: true });
 		}
 	}
 
-	ingresar(f: NgForm) {
-		if (f.invalid) {
-			return;
+	login() {
+		if (this.loginForm.value.recordarme) {
+			localStorage.setItem('email', this.loginForm.value.email);
+		} else {
+			localStorage.removeItem('email');
 		}
-		const usuario = new Usuario(null, f.value.email, f.value.password);
-		this.loginService
-			.loginUsuario(usuario, true)
-			.subscribe((resp) => this.router.navigate([ '/dashboard' ]));
+		this.authService
+			.login(this.loginForm.value)
+			.subscribe(
+				(res) => this.router.navigate([ '/' ]),
+				(error) => console.log('Invalid email or password!')
+			);
 	}
 }

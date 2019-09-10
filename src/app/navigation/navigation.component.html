@@ -1,0 +1,66 @@
+<mat-sidenav-container class="app-sidenav-container">
+
+    <mat-sidenav #sidenav class="app-sidenav" [class.mat-elevation-z10]="true" [opened]="!mobileQuery.matches"
+        [mode]="mobileQuery.matches ? 'over' : 'side'">
+
+        <mat-toolbar color="primary">
+            Menu
+        </mat-toolbar>
+
+        <mat-nav-list>
+            <div *ngFor="let navListItem of navList">
+
+                <a mat-list-item *ngIf="!navListItem.subNavList" [routerLink]="[ navListItem.url ]"
+                    routerLinkActive="router-link-active">
+                    <mat-icon matListIcon>{{ navListItem.icon }}</mat-icon><span> {{ navListItem.title }}</span>
+                </a>
+
+                <mat-expansion-panel [class.mat-elevation-z0]="true" *ngIf="navListItem.subNavList">
+
+                    <mat-expansion-panel-header>
+                        <mat-list-item>
+                            <mat-icon matListIcon>{{ navListItem.icon }}</mat-icon><span> {{ navListItem.title }}</span>
+                        </mat-list-item>
+                    </mat-expansion-panel-header>
+
+                    <a *ngFor="let subNavListItem of navListItem.subNavList" mat-list-item [routerLink]="[ subNavListItem.url ]"
+                        routerLinkActive="router-link-active">
+                        <mat-icon matListIcon>{{ subNavListItem.icon }}</mat-icon><span> {{ subNavListItem.title }}</span>
+                    </a>
+
+                </mat-expansion-panel>
+            </div>
+        </mat-nav-list>
+
+    </mat-sidenav>
+
+    <div class="app-sidenav-content">
+
+        <mat-toolbar color="primary">
+            <button mat-button class="sidenav-toggle" (click)="sidenav.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+
+            <span>Audio Rental</span>
+
+            <span class="example-spacer"></span>
+
+                
+            <button mat-button [matMenuTriggerFor]="menu">
+                <span>{{ authService.currentUsuario.nombre }}</span>
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="authService.logout()">Cerrar sesión</button>
+                <button mat-menu-item (click)="authService.logoutAll()">Cerrar todas las sesiones</button>
+            </mat-menu>
+        </mat-toolbar>
+
+        <div class="wrapper">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+
+</mat-sidenav-container>

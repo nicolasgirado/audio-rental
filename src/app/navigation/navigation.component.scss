@@ -1,0 +1,60 @@
+$iconWidth: 56px;
+
+// sidenav
+.app-sidenav-container {
+	flex: 1;
+	position: fixed;
+	width: 100%;
+	min-width: 100%;
+	height: 100%;
+	min-height: 100%;
+}
+
+.app-sidenav {
+	width: 240px;
+}
+
+.mat-drawer-side {
+	border: none;
+}
+
+.app-sidenav-content {
+	display: flex;
+	height: 100%;
+
+	flex-direction: column;
+}
+
+.wrapper {
+	margin: 50px;
+}
+
+mat-expansion-panel-header {
+	padding: 0px 24px 0px 0px;
+}
+
+// toolbar
+.example-spacer {
+	flex: 1 1 auto;
+}
+
+.sidenav-toggle {
+	// display: none;
+	padding: 0;
+	margin: 8px;
+	min-width: $iconWidth;
+
+	@media (max-width: 720px) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	mat-icon {
+		font-size: 30px;
+		height: $iconWidth;
+		width: $iconWidth;
+		line-height: $iconWidth;
+		color: white;
+	}
+}

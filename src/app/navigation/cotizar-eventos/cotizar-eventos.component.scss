@@ -1,0 +1,37 @@
+mat-card {
+	// position: relative;
+	min-height: 50px;
+}
+
+.tabEncabezado {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+}
+
+.tabAdicionales {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	max-height: 500px;
+}
+
+.table-container {
+	position: relative;
+	max-height: 300px;
+	overflow: auto;
+}
+
+.table {
+	width: 100%;
+}
+
+.mat-column-tecnica {
+	padding: 5px;
+}
+.mat-column-DJ {
+	padding: 5px;
+}
+.mat-column-comision {
+	padding: 5px;
+}
