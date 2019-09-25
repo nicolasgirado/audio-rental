@@ -9,10 +9,14 @@ import { SharedModule } from '../shared/shared.module';
 // Components
 import { NavigationComponent } from './navigation.component';
 import { HomeComponent } from './home/home.component';
-import { EquiposComponent } from './equipos/equipos.component';
-import { EventosComponent } from './eventos/eventos.component';
-import { CotizarEventosComponent } from './cotizar-eventos/cotizar-eventos.component';
 import { UsuariosComponent } from './usuarios/usuarios.component';
+import { UsuarioDialogComponent } from './usuarios/usuario-dialog/usuario-dialog.component';
+import { EquiposComponent } from './equipos/equipos.component';
+import { EquipoDialogComponent } from './equipos/equipo-dialog/equipo-dialog.component';
+import { LugaresComponent } from './lugares/lugares.component';
+import { LugarDialogComponent } from './lugares/lugar-dialog/lugar-dialog.component';
+import { SalonesComponent } from './salones/salones.component';
+import { SalonDialogComponent } from './salones/salon-dialog/salon-dialog.component';
 // Pipes
 import { MyCurrencyPipe } from '../shared/my-currency.pipe';
 // MatDatePicker
@@ -35,12 +39,23 @@ export const MY_FORMATS = {
 	declarations: [
 		NavigationComponent,
 		HomeComponent,
+		UsuariosComponent,
+		UsuarioDialogComponent,
 		EquiposComponent,
-		EventosComponent,
-		CotizarEventosComponent,
-		UsuariosComponent
+		EquipoDialogComponent,
+		LugaresComponent,
+		LugarDialogComponent,
+		SalonesComponent,
+		SalonDialogComponent
 	],
 	imports: [ CommonModule, ReactiveFormsModule, FlexLayoutModule, NavigationRoutingModule, SharedModule ],
+	entryComponents: [
+		UsuarioDialogComponent,
+		EquipoDialogComponent,
+		LugarDialogComponent,
+		SalonesComponent,
+		SalonDialogComponent
+	],
 	providers: [
 		DatePipe,
 		PercentPipe,

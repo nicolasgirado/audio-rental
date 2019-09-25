@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material';
 
 import { Usuario } from '../../shared/models/usuario';
-import { DataService } from '../../services/data.service';
+import { UsuarioService } from '../../services/usuario.service';
+import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.component';
+import { DialogBoxComponent } from '../../shared/dialog-box/dialog-box.component';
 
 @Component({
 	selector: 'app-usuarios',
@@ -12,27 +12,70 @@ import { DataService } from '../../services/data.service';
 	styleUrls: [ './usuarios.component.scss' ]
 })
 export class UsuariosComponent implements OnInit {
-	displayedColumns = [ 'position', 'nombre', 'email', 'role' ];
-	dataSource: MatTableDataSource<Usuario>;
-	loading = true;
+	pageTitle = 'Usuarios';
+	modelName = 'usuario';
+	columnHeader = { nombre: 'Nombre', email: 'Correo electrónico', role: 'Role' };
+	tableData: Usuario[];
 
-	@ViewChild(MatPaginator, { static: true })
-	paginator: MatPaginator;
-	@ViewChild(MatSort, { static: true })
-	sort: MatSort;
-
-	constructor(public dataService: DataService) {}
+	constructor(public usuarioService: UsuarioService, public dialog: MatDialog) {}
 
 	ngOnInit() {
-		this.dataService.getUsuarios().subscribe((usuarios: any) => {
-			this.dataSource = new MatTableDataSource<Usuario>(usuarios);
-		});
-		// setTimeout(() => (this.dataSource.paginator = this.paginator));
-		// setTimeout(() => (this.dataSource.sort = this.sort));
-		this.loading = false;
+		this.loadUsuarios();
 	}
 
-	applyFilter(filterValue: string) {
-		this.dataSource.filter = filterValue.trim().toLowerCase();
+	loadUsuarios() {
+		this.usuarioService.readAll().subscribe((usuarios: any) => {
+			this.tableData = usuarios;
+		});
+	}
+
+	openDialog(event) {
+		let dialogRef;
+		const action = event.action;
+		const usuario = event.obj;
+		const dialogConfig = new MatDialogConfig();
+
+		dialogConfig.autoFocus = true;
+		dialogConfig.width = '500px';
+
+		if (action === 'Create') {
+			dialogConfig.data = {
+				title: `Nuevo usuario`,
+				action,
+				usuario
+			};
+			dialogRef = this.dialog.open(UsuarioDialogComponent, dialogConfig);
+
+			dialogRef.afterClosed().subscribe((result) => {
+				if (result) {
+					this.usuarioService.create(result).subscribe(() => this.loadUsuarios());
+				}
+			});
+		} else if (action === 'Update') {
+			dialogConfig.data = {
+				title: `Editar el usuario  ${usuario.nombre}`,
+				action,
+				usuario
+			};
+			dialogRef = this.dialog.open(UsuarioDialogComponent, dialogConfig);
+
+			dialogRef.afterClosed().subscribe((result) => {
+				if (result) {
+					this.usuarioService.update(result).subscribe(() => this.loadUsuarios());
+				}
+			});
+		} else if (action === 'Delete') {
+			dialogConfig.data = {
+				title: `Eliminar el usuario  ${usuario.nombre}`,
+				message: '¿Estás seguro?'
+			};
+			dialogRef = this.dialog.open(DialogBoxComponent, dialogConfig);
+
+			dialogRef.afterClosed().subscribe((result) => {
+				if (result) {
+					this.usuarioService.delete(usuario._id).subscribe(() => this.loadUsuarios());
+				}
+			});
+		}
 	}
 }

@@ -1,0 +1,575 @@
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, FormControlName } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { DatePipe, PercentPipe } from '@angular/common';
+
+import { Evento } from '../../shared/models/evento';
+import { Cliente } from '../../shared/models/cliente';
+import { Lugar } from '../../shared/models/lugar';
+import { Salon } from '../../shared/models/salon';
+import { Equipo } from '../../shared/models/equipo';
+import { DataService } from '../../services/data.service';
+import { MyCurrencyPipe } from '../../shared/my-currency.pipe';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription, Observable, fromEvent, merge } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { GenericValidator } from 'src/app/shared/generic-validator';
+
+@Component({
+	selector: 'app-cotizar-eventos',
+	templateUrl: './cotizar-eventos.component.html',
+	styleUrls: [ './cotizar-eventos.component.scss' ]
+})
+export class CotizarEventosComponent implements OnInit, OnDestroy, AfterViewInit {
+	pageTitle = 'Editar Evento';
+	eventoForm: FormGroup;
+	evento: Evento;
+	clientes: Cliente[];
+	lugares: Lugar[];
+	equipos: Equipo[];
+	salones: Salon[];
+
+	errorMessage: string;
+	private sub: Subscription;
+
+	@ViewChildren(FormControlName, { read: ElementRef })
+	formInputElements: ElementRef[];
+
+	// Use with the generic validation message class
+	displayMessage: { [key: string]: string } = {};
+	private validationMessages: { [key: string]: { [key: string]: string } };
+	private genericValidator: GenericValidator;
+
+	constructor(
+		private formbuilder: FormBuilder,
+		private route: ActivatedRoute,
+		private router: Router,
+		private dataService: DataService
+	) {
+		// Defines all of the validation messages for the form.
+		this.validationMessages = {
+			nombre: { required: 'Campo requerido' },
+			tipoDeEvento: { required: 'Campo requerido' },
+			cliente: { required: 'Campo requerido' },
+			lugar: { required: 'Campo requerido' },
+			salon: { required: 'Campo requerido' },
+			fechaEvento: { required: 'Campo requerido' }
+		};
+
+		// Define an instance of the validator for use with this form,
+		// passing in this form's set of validation messages.
+		this.genericValidator = new GenericValidator(this.validationMessages);
+	}
+
+	ngOnInit(): void {
+		this.eventoForm = this.formbuilder.group({
+			nombre: [ '', Validators.required ],
+			tipoDeEvento: [ '', Validators.required ],
+			cliente: [ '', Validators.required ],
+			lugar: [ '', Validators.required ],
+			salon: [ '', Validators.required ],
+			fechaEvento: [ '', Validators.required ],
+			fechaArmado: [ '' ],
+			fechaDevolucion: [ '' ],
+			promoViernes: [ '' ],
+			dj: [ '' ],
+			responsable: [ '' ],
+			valorPack: [ { value: 0, disabled: true } ],
+			totalSubtotal: [ { value: 0, disabled: true } ],
+			totalPcioVtaDJ: [ { value: 0, disabled: true } ]
+		});
+
+		this.sub = this.route.paramMap.subscribe((params) => {
+			const id = params.get('id');
+			this.getEvento(id);
+		});
+
+		this.getClientes();
+		this.getLugares();
+		this.getEquipos();
+	}
+
+	ngOnDestroy(): void {
+		this.sub.unsubscribe();
+	}
+
+	ngAfterViewInit(): void {
+		// Watch for the blur event from any input element on the form.
+		const controlBlurs: Observable<any>[] = this.formInputElements.map((formControl: ElementRef) =>
+			fromEvent(formControl.nativeElement, 'blur')
+		);
+
+		// Merge the blur event observable with the valueChanges observable
+		merge(this.eventoForm.valueChanges, ...controlBlurs).pipe(debounceTime(800)).subscribe((value) => {
+			this.displayMessage = this.genericValidator.processMessages(this.eventoForm);
+		});
+	}
+
+	getEvento(id: string): void {
+		this.dataService
+			.getEvento(id)
+			.subscribe(
+				(evento: Evento) => this.displayEvento(evento),
+				(error: any) => (this.errorMessage = error as any)
+			);
+	}
+
+	displayEvento(evento: Evento): void {
+		if (this.eventoForm) {
+			this.eventoForm.reset();
+		}
+		this.evento = evento;
+
+		if (this.evento._id === '0') {
+			this.pageTitle = 'Agregar Evento';
+		} else {
+			this.pageTitle = `Editar Evento: ${this.evento.nombre}`;
+		}
+	}
+
+	deleteEvento(): void {
+		if (this.evento._id === '0') {
+			// Don't delete, it was never saved.
+			this.onSaveComplete();
+		} else {
+			if (confirm(`Desea eliminar el evento: ${this.evento.nombre}?`)) {
+				this.dataService
+					.deleteEvento(this.evento._id)
+					.subscribe(
+						() => this.onSaveComplete(),
+						(error: any) => (this.errorMessage = error as any)
+					);
+			}
+		}
+	}
+
+	saveEvento(): void {
+		if (this.eventoForm.valid) {
+			if (this.eventoForm.dirty) {
+				const evento = { ...this.evento, ...this.eventoForm.value };
+
+				if (evento.id === 0) {
+					this.dataService
+						.createEvento(evento)
+						.subscribe(
+							() => this.onSaveComplete(),
+							(error: any) => (this.errorMessage = error as any)
+						);
+				} else {
+					this.dataService
+						.updateEvento(evento)
+						.subscribe(
+							() => this.onSaveComplete(),
+							(error: any) => (this.errorMessage = error as any)
+						);
+				}
+			} else {
+				this.onSaveComplete();
+			}
+		} else {
+			this.errorMessage = 'Please correct the validation errors.';
+		}
+	}
+
+	onSaveComplete(): void {
+		// Reset the form to clear the flags
+		this.eventoForm.reset();
+		this.router.navigate([ '/eventos' ]);
+	}
+
+	// Get data from dataService: Clientes, Lugares, Salones By Lugar, Equipos
+	getClientes(): void {
+		this.dataService
+			.getClientes()
+			.subscribe(
+				(clientes: Cliente[]) => (this.clientes = clientes),
+				(error: any) => (this.errorMessage = error as any)
+			);
+	}
+
+	getLugares(): void {
+		this.dataService
+			.getLugares()
+			.subscribe(
+				(lugares: Lugar[]) => (this.lugares = lugares),
+				(error: any) => (this.errorMessage = error as any)
+			);
+	}
+
+	getEquipos(): void {
+		this.dataService
+			.getEquipos()
+			.subscribe(
+				(equipos: Equipo[]) => (this.equipos = equipos),
+				(error: any) => (this.errorMessage = error as any)
+			);
+	}
+
+	getSalones(): void {
+		this.dataService
+			.getSalonesByLugar(this.eventoForm.get('lugar').value)
+			.subscribe(
+				(salones: any) => (this.salones = salones),
+				(error: any) => (this.errorMessage = error as any)
+			);
+	}
+
+	// pageTitle = 'Editar evento';
+	// eventoForm: FormGroup;
+	// eventoFormValueChanges$;
+	// evento: Evento;
+	// lugares: Lugar[];
+	// salones: Salon[];
+	// equipos: Equipo[];
+	// packs: any;
+	// fechaEvento: Date;
+	// totales = [
+	// 	{ label: 'Total pack', tecnica: 0, DJ: 0, comision: 0 },
+	// 	{ label: 'Total adicionales', tecnica: 0, DJ: 0, comision: 0 },
+	// 	{ label: 'Total pack + adicionales', tecnica: 0, DJ: 0, comision: 0 }
+	// ];
+	// totalesDataSource: MatTableDataSource<any>;
+	// totalesDisplayedColumns = [ 'label', 'tecnica', 'DJ', 'comision' ];
+	// errorMessage: string;
+
+	// private sub: Subscription;
+
+	// get adicionales(): FormArray {
+	// 	return this.eventoForm.get('adicionales') as FormArray;
+	// }
+
+	// constructor(
+	// 	private formbuilder: FormBuilder,
+	// 	private dataService: DataService,
+	// 	private datePipe: DatePipe,
+	// 	private percentPipe: PercentPipe,
+	// 	private myCurrencyPipe: MyCurrencyPipe,
+	// 	private route: ActivatedRoute,
+	// 	private router: Router
+	// ) {}
+
+	// ngOnInit(): void {
+	// 	this.getLugares();
+	// 	this.getEquipos();
+	// 	this.eventoForm = this.formbuilder.group({
+	// 		nombre: [ '', Validators.required ],
+	// 		lugar: [ '', Validators.required ],
+	// 		salon: [ '', Validators.required ],
+	// 		fechaEvento: [ '', Validators.required ],
+	// 		valorPack: [ { value: 0, disabled: true } ],
+	// 		totalSubtotal: [ { value: 0, disabled: true } ],
+	// 		totalPcioVtaDJ: [ { value: 0, disabled: true } ],
+	// 		adicionales: this.formbuilder.array([ this.getAdicional() ])
+	// 	});
+
+	// 	this.sub = this.route.paramMap.subscribe((params) => {
+	// 		const id = params.get('id');
+	// 		this.getEvento(id);
+	// 	});
+
+	// 	// Totales table DataSource
+	// 	this.totalesDataSource = new MatTableDataSource<any>(this.totales);
+
+	// 	// Subscribe to valueChanges in eventoForm
+	// 	this.eventoFormValueChanges$ = this.eventoForm.valueChanges;
+	// 	this.eventoFormValueChanges$.subscribe((eventoFormValue) => {
+	// 		this.updateEvento(eventoFormValue);
+	// 		this.updateAdicionales(
+	// 			eventoFormValue.fechaEvento,
+	// 			eventoFormValue.lugar,
+	// 			eventoFormValue.adicionales
+	// 		);
+	// 		console.log(this.eventoForm.getRawValue());
+	// 	});
+	// }
+
+	// ngOnDestroy(): void {
+	// 	this.sub.unsubscribe();
+	// 	this.eventoFormValueChanges$.unsubscribe();
+	// }
+
+	// getEvento(id: string): void {
+	// 	this.dataService
+	// 		.getEvento(id)
+	// 		.subscribe(
+	// 			(evento: Evento) => this.displayEvento(evento),
+	// 			(error: any) => (this.errorMessage = error as any)
+	// 		);
+	// }
+
+	// displayEvento(evento: Evento): void {
+	// 	if (this.eventoForm) {
+	// 		this.eventoForm.reset();
+	// 	}
+	// 	this.evento = evento;
+
+	// 	if (this.evento._id === '0') {
+	// 		this.pageTitle = 'Agregar Evento';
+	// 	} else {
+	// 		this.pageTitle = `Editar Evento: ${this.evento.nombre}`;
+	// 	}
+
+	// 	// Update the data on the form
+	// 	this.eventoForm.patchValue({
+	// 		nombre: this.evento.nombre,
+	// 		lugar: this.evento.lugar,
+	// 		salon: this.evento.salon,
+	// 		fechaEvento: this.evento.fechaEvento,
+	// 		valorPack: this.evento.valorPack,
+	// 		totalSubtotal: this.evento.totalSubtotal,
+	// 		totalPcioVtaDJ: this.evento.totalPcioVtaDJ
+	// 	});
+	// 	this.eventoForm.setControl('adicionales', this.formbuilder.array(this.evento.adicionales || []));
+	// }
+
+	// // Save Evento on Submit
+	// saveEvento(): void {
+	// 	if (this.eventoForm.valid) {
+	// 		if (this.eventoForm.dirty) {
+	// 			const newEvento = { ...this.evento, ...this.eventoForm };
+	// 			console.log(newEvento);
+
+	// 			// if (newEvento._id === '0') {
+	// 			// 	this.dataService
+	// 			// 		.createEvento(newEvento)
+	// 			// 		.subscribe(
+	// 			// 			() => this.onSaveComplete(),
+	// 			// 			(error: any) => (this.errorMessage = error as any)
+	// 			// 		);
+	// 			// } else {
+	// 			// 	this.dataService
+	// 			// 		.updateEvento(newEvento)
+	// 			// 		.subscribe(
+	// 			// 			() => this.onSaveComplete(),
+	// 			// 			(error: any) => (this.errorMessage = error as any)
+	// 			// 		);
+	// 			// }
+	// 			// } else {
+	// 			// 	this.onSaveComplete();
+	// 		}
+	// 		// } else {
+	// 		// 	this.errorMessage = 'Please correct the validation errors.';
+	// 	}
+	// }
+
+	// onSaveComplete(): void {
+	// 	this.eventoForm.reset();
+	// 	this.router.navigate([ '/eventos' ]);
+	// }
+
+	// // Adicionales
+	// getAdicional(): FormGroup {
+	// 	return this.formbuilder.group({
+	// 		cantidad: [ 1, [ Validators.required, Validators.min(0) ] ],
+	// 		equipo: [ '', Validators.required ],
+	// 		observaciones: [ '', Validators.maxLength(50) ],
+	// 		pcioUnit: [ { value: 0, disabled: true } ],
+	// 		subtotal: [ { value: 0, disabled: true } ],
+	// 		pcioVtaDJ: [ { value: 0, disabled: true } ],
+	// 		markUp: [ { value: 0, disabled: true } ]
+	// 	});
+	// }
+
+	// addAdicional(): void {
+	// 	const control = this.eventoForm.controls.adicionales as FormArray;
+	// 	control.push(this.getAdicional());
+	// }
+
+	// removeAdicional(i: number) {
+	// 	const control = this.eventoForm.controls.adicionales as FormArray;
+	// 	control.removeAt(i);
+	// }
+
+	// clearAllAdicionales() {
+	// 	const control = this.eventoForm.controls.adicionales as FormArray;
+	// 	while (control.length) {
+	// 		control.removeAt(control.length - 1);
+	// 	}
+	// 	control.clearValidators();
+	// 	control.push(this.getAdicional());
+	// }
+
+	// // Update valorPack as soon as something changed on evento group
+	// private updateEvento(eventoFormValue: any) {
+	// 	this.evento.salon = eventoFormValue.salon._id;
+	// 	this.evento.fechaEvento = eventoFormValue.fechaEvento._d;
+
+	// 	if (!this.packs) {
+	// 		this.evento.valorPack = 0;
+	// 	} else {
+	// 		const pack = this.getPack(this.evento.fechaEvento);
+
+	// 		if (!pack) {
+	// 			this.evento.valorPack = 0;
+	// 		} else {
+	// 			this.evento.valorPack = pack.valorPack;
+	// 			this.updateTotales();
+	// 		}
+	// 	}
+	// 	this.setEventoFormControlValue('valorPack', this.evento.valorPack, 'myCurrencyPipe');
+	// }
+
+	// // Update adicionales as soon as something changed on evento group
+	// private updateAdicionales(fechaEvento: any, lugar: any, adicionales: any) {
+	// 	let totalSubtotal = 0;
+	// 	let totalPcioVtaDJ = 0;
+
+	// 	// tslint:disable-next-line: forin
+	// 	for (const i in adicionales) {
+	// 		let pcioUnit = 0;
+	// 		let subtotal = 0;
+	// 		let pcioVtaDJ = 0;
+	// 		let markUp = 0;
+
+	// 		if (adicionales[i].equipo) {
+	// 			const precios = adicionales[i].equipo.precios;
+
+	// 			if (fechaEvento && lugar && precios) {
+	// 				const precio = this.getPrecio(precios, fechaEvento, lugar);
+
+	// 				if (precio) {
+	// 					pcioUnit = precio.precio;
+	// 				}
+	// 			}
+	// 		}
+
+	// 		subtotal = adicionales[i].cantidad * pcioUnit;
+	// 		pcioVtaDJ = subtotal * 1.5;
+	// 		subtotal === 0 ? (markUp = 0) : (markUp = pcioVtaDJ / subtotal - 1);
+
+	// 		totalSubtotal += subtotal;
+	// 		totalPcioVtaDJ += pcioVtaDJ;
+
+	// 		this.setAdicionalesFormControlValue(i, 'pcioUnit', pcioUnit, 'myCurrencyPipe');
+	// 		this.setAdicionalesFormControlValue(i, 'subtotal', subtotal, 'myCurrencyPipe');
+	// 		this.setAdicionalesFormControlValue(i, 'pcioVtaDJ', pcioVtaDJ, 'myCurrencyPipe');
+	// 		this.setAdicionalesFormControlValue(i, 'markUp', markUp, 'percentPipe');
+	// 	}
+
+	// 	this.setEventoFormControlValue('totalSubtotal', totalSubtotal, 'myCurrencyPipe');
+	// 	this.setEventoFormControlValue('totalPcioVtaDJ', totalPcioVtaDJ, 'myCurrencyPipe');
+
+	// 	this.updateTotales();
+	// }
+
+	// private setAdicionalesFormControlValue(i: string, control: string, value: number, pipe: string) {
+	// 	const adicionalesControl = this.eventoForm.controls.adicionales as FormArray;
+	// 	switch (pipe) {
+	// 		case 'myCurrencyPipe':
+	// 			adicionalesControl
+	// 				.at(+i)
+	// 				.get(control)
+	// 				.setValue(this.myCurrencyPipe.transform(value), { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 		case 'percentPipe':
+	// 			adicionalesControl
+	// 				.at(+i)
+	// 				.get(control)
+	// 				.setValue(this.percentPipe.transform(value), { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 		default:
+	// 			adicionalesControl.at(+i).get(control).setValue(value, { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 	}
+	// }
+
+	// private setEventoFormControlValue(control: string, value: number, pipe: string) {
+	// 	switch (pipe) {
+	// 		case 'myCurrencyPipe':
+	// 			this.eventoForm
+	// 				.get(control)
+	// 				.setValue(this.myCurrencyPipe.transform(value), { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 		case 'percentPipe':
+	// 			this.eventoForm
+	// 				.get(control)
+	// 				.setValue(this.percentPipe.transform(value), { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 		default:
+	// 			this.eventoForm.get(control).setValue(value, { onlySelf: true, emitEvent: false });
+	// 			break;
+	// 	}
+	// }
+
+	// private getPack(fechaEvento: Date) {
+	// 	const mesanio = this.datePipe.transform(fechaEvento, 'MM-yyyy');
+	// 	const dia = fechaEvento.getDate();
+	// 	let quincena;
+	// 	dia > 15 ? (quincena = 2) : (quincena = 1);
+
+	// 	return this.packs.filter((pack) => {
+	// 		if (pack.mesanio === mesanio && pack.quincena === quincena) {
+	// 			return true;
+	// 		} else {
+	// 			return false;
+	// 		}
+	// 	})[0];
+	// }
+
+	// private getPrecio(precios: any, fechaEvento: any, lugar: string) {
+	// 	const anio = fechaEvento._d.getFullYear();
+	// 	const mes = fechaEvento._d.getMonth();
+	// 	let semestre;
+	// 	mes > 6 ? (semestre = 2) : (semestre = 1);
+
+	// 	return precios.filter((precio) => {
+	// 		if (precio.anio === anio && precio.semestre === semestre && precio.lugar === lugar) {
+	// 			return true;
+	// 		} else {
+	// 			return false;
+	// 		}
+	// 	})[0];
+	// }
+
+	// // Update totales table
+	// private updateTotales() {
+	// 	const valorPack = this.eventoForm.get('valorPack').value;
+	// 	const totalSubtotal = this.eventoForm.get('totalSubtotal').value;
+	// 	const totalPcioVtaDJ = this.eventoForm.get('totalPcioVtaDJ').value;
+
+	// 	this.totales[0].tecnica = valorPack * 0.6;
+	// 	this.totales[0].DJ = valorPack * 0.25;
+	// 	this.totales[0].comision = valorPack * 0.15;
+
+	// 	this.totales[1].tecnica = totalSubtotal;
+	// 	this.totales[1].DJ = (totalPcioVtaDJ - totalSubtotal) * 0.606;
+	// 	this.totales[1].comision = (totalPcioVtaDJ - totalSubtotal) * 0.394;
+
+	// 	this.totales[2].tecnica = this.totales[0].tecnica + this.totales[1].tecnica;
+	// 	this.totales[2].DJ = this.totales[0].DJ + this.totales[1].DJ;
+	// 	this.totales[2].comision = this.totales[0].comision + this.totales[1].comision;
+	// }
+
+	// // Get data from dataService: Lugares, Salones By Lugar, Equipos
+	// getLugares(): void {
+	// 	this.dataService
+	// 		.getLugares()
+	// 		.subscribe(
+	// 			(lugares: Lugar[]) => (this.lugares = lugares),
+	// 			(error: any) => (this.errorMessage = error as any)
+	// 		);
+	// }
+
+	// getSalones(): void {
+	// 	this.dataService
+	// 		.getSalonesByLugar(this.eventoForm.get('lugar').value)
+	// 		.subscribe(
+	// 			(salones: any) => (this.salones = salones),
+	// 			(error: any) => (this.errorMessage = error as any)
+	// 		);
+	// }
+
+	// getEquipos(): void {
+	// 	this.dataService
+	// 		.getEquipos()
+	// 		.subscribe(
+	// 			(equipos: Equipo[]) => (this.equipos = equipos),
+	// 			(error: any) => (this.errorMessage = error as any)
+	// 		);
+	// }
+
+	// // Get packs when salon selected
+	// getPacks(packs: any) {
+	// 	this.packs = packs;
+	// }
+}

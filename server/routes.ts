@@ -2,10 +2,13 @@ import * as express from 'express';
 
 import ClienteCtrl from './controllers/cliente.controller';
 import EquipoCtrl from './controllers/equipo.controller';
+import EquipoPrecioCtrl from './controllers/equipoPrecio.controller';
 import EventoCtrl from './controllers/evento.controller';
+import EventoAdicionalCtrl from './controllers/eventoAdicional.controller';
 import LugarCtrl from './controllers/lugar.controller';
 import UDCCtrl from './controllers/udc.controller';
 import SalonCtrl from './controllers/salon.controller';
+import SalonPackCtrl from './controllers/salonPack.controller';
 import UsuarioCtrl from './controllers/usuario.controller';
 
 import { uploadImg } from './middlewares/multer';
@@ -16,10 +19,13 @@ export default function setRoutes(app) {
 
 	const clienteCtrl = new ClienteCtrl();
 	const equipoCtrl = new EquipoCtrl();
+	const equipoPrecioCtrl = new EquipoPrecioCtrl();
 	const eventoCtrl = new EventoCtrl();
+	const eventoAdicionalCtrl = new EventoAdicionalCtrl();
 	const lugarCtrl = new LugarCtrl();
 	const udcCtrl = new UDCCtrl();
 	const salonCtrl = new SalonCtrl();
+	const salonPackCtrl = new SalonPackCtrl();
 	const usuarioCtrl = new UsuarioCtrl();
 
 	// Login
@@ -28,7 +34,7 @@ export default function setRoutes(app) {
 	router.route('/logoutAll').post(tokenValidationAuth, usuarioCtrl.logoutAll);
 
 	// Usuario
-	router.route('/usuarios').post(usuarioCtrl.create);
+	router.route('/usuarios').post(tokenValidationAuth, sameUserOrAdminAuth, usuarioCtrl.create);
 	router.route('/usuarios').get(tokenValidationAuth, sameUserOrAdminAuth, usuarioCtrl.readAll);
 	router.route('/usuarios/:id').get(tokenValidationAuth, sameUserOrAdminAuth, usuarioCtrl.read);
 	router.route('/usuarios/:id').put(tokenValidationAuth, sameUserOrAdminAuth, usuarioCtrl.update);
@@ -60,12 +66,26 @@ export default function setRoutes(app) {
 	router.route('/equipos/:id').put(tokenValidationAuth, equipoCtrl.update);
 	router.route('/equipos/:id').delete(tokenValidationAuth, equipoCtrl.delete);
 
+	// EquipoPrecio
+	router.route('/equipoPrecios').post(tokenValidationAuth, equipoPrecioCtrl.create);
+	router.route('/equipoPrecios').get(tokenValidationAuth, equipoPrecioCtrl.readAll);
+	router.route('/equipoPrecios/:id').get(tokenValidationAuth, equipoPrecioCtrl.read);
+	router.route('/equipoPrecios/:id').put(tokenValidationAuth, equipoPrecioCtrl.update);
+	router.route('/equipoPrecios/:id').delete(tokenValidationAuth, equipoPrecioCtrl.delete);
+
 	// Evento
 	router.route('/eventos').post(tokenValidationAuth, eventoCtrl.create);
 	router.route('/eventos').get(tokenValidationAuth, eventoCtrl.readAll);
 	router.route('/eventos/:id').get(tokenValidationAuth, eventoCtrl.read);
 	router.route('/eventos/:id').put(tokenValidationAuth, eventoCtrl.update);
 	router.route('/eventos/:id').delete(tokenValidationAuth, eventoCtrl.delete);
+
+	// EventoAdicional
+	router.route('/eventoAdicionales').post(tokenValidationAuth, eventoAdicionalCtrl.create);
+	router.route('/eventoAdicionales').get(tokenValidationAuth, eventoAdicionalCtrl.readAll);
+	router.route('/eventoAdicionales/:id').get(tokenValidationAuth, eventoAdicionalCtrl.read);
+	router.route('/eventoAdicionales/:id').put(tokenValidationAuth, eventoAdicionalCtrl.update);
+	router.route('/eventoAdicionales/:id').delete(tokenValidationAuth, eventoAdicionalCtrl.delete);
 
 	// Lugar
 	router.route('/lugares').post(tokenValidationAuth, lugarCtrl.create);
@@ -81,6 +101,13 @@ export default function setRoutes(app) {
 	router.route('/salones/:id').get(tokenValidationAuth, salonCtrl.read);
 	router.route('/salones/:id').put(tokenValidationAuth, salonCtrl.update);
 	router.route('/salones/:id').delete(tokenValidationAuth, salonCtrl.delete);
+
+	// SalonPack
+	router.route('/salonPacks').post(tokenValidationAuth, salonPackCtrl.create);
+	router.route('/salonPacks').get(tokenValidationAuth, salonPackCtrl.readAll);
+	router.route('/salonPacks/:id').get(tokenValidationAuth, salonPackCtrl.read);
+	router.route('/salonPacks/:id').put(tokenValidationAuth, salonPackCtrl.update);
+	router.route('/salonPacks/:id').delete(tokenValidationAuth, salonPackCtrl.delete);
 
 	// UDC
 	router.route('/udcs').post(tokenValidationAuth, udcCtrl.create);

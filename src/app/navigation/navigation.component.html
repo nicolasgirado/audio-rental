@@ -4,7 +4,7 @@
         [mode]="mobileQuery.matches ? 'over' : 'side'">
 
         <mat-toolbar color="primary">
-            Menu
+                <span>{{ authService.currentUsuario.nombre }}</span>
         </mat-toolbar>
 
         <mat-nav-list>
@@ -44,10 +44,8 @@
             <span>Audio Rental</span>
 
             <span class="example-spacer"></span>
-
                 
             <button mat-button [matMenuTriggerFor]="menu">
-                <span>{{ authService.currentUsuario.nombre }}</span>
                 <mat-icon>more_vert</mat-icon>
             </button>
 

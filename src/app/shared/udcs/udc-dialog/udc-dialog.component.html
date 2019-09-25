@@ -1,0 +1,23 @@
+<h3 mat-dialog-title><strong>{{ data.title }}</strong></h3>
+
+<!-- formGroup 'udcDialogForm' -->
+<form [formGroup]="udcDialogForm" novalidate>
+
+    <mat-dialog-content>
+
+        <!-- formControl 'descripcion' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Descripción*</mat-label>
+            <input formControlName="descripcion" placeholder="Descripción" matInput>
+            <mat-error><span>{{displayMessage.descripcion}}</span></mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="close()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="!udcDialogForm.valid || !udcDialogForm.dirty" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+
+</form>

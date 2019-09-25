@@ -1,4 +1,6 @@
-export interface Cliente {
+import { Resource } from './resource';
+
+export class Cliente extends Resource {
 	razonSocial: string;
 	direccion: string;
 	contactos?: [
@@ -10,5 +12,4 @@ export interface Cliente {
 	];
 	telefonos?: string[];
 	email?: string;
-	_id?: string;
 }

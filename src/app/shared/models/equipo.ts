@@ -1,16 +1,9 @@
-export interface Equipo {
+import { Resource } from './resource';
+
+export class Equipo extends Resource {
 	descripcion: string;
 	rubro: string;
+	rubroDesc?: string;
 	observaciones?: string;
-	imagenes: string[];
-	precios?: [
-		{
-			lugar: string;
-			anio: number;
-			semestre: number;
-			precio: number;
-			_id?: string;
-		}
-	];
-	_id?: string;
+	imagenes?: string[];
 }

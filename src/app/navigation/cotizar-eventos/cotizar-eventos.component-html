@@ -1,0 +1,146 @@
+<mat-card class="mat-elevation-z8">
+    <mat-card-header>
+        <mat-card-title>
+            <h2>{{pageTitle}}</h2>
+        </mat-card-title>
+    </mat-card-header>
+
+    <!-- formGroup 'eventoForm' -->
+    <form [formGroup]="eventoForm"
+          (ngSubmit)="saveEvento()"
+          novalidate>
+
+        <mat-card-content>
+            <mat-tab-group>
+                <mat-tab label="Encabezado">
+                    
+                    <br>
+
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="3.5%" fxLayoutAlign="left">
+                        <!-- formControl 'nombre' -->
+                        <mat-form-field class="example-full-width" fxFlex="75%">
+                            <mat-label>Nombre del evento</mat-label>
+                            <input formControlName="nombre" placeholder="Nombre del evento" matInput>
+                            <mat-error>
+                                <span>{{displayMessage.nombre}}</span>
+                            </mat-error>
+                        </mat-form-field>
+                        
+                        <!-- formControl 'tipoDeEvento' -->
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Tipo de evento</mat-label>
+                            <input formControlName="tipoDeEvento" placeholder="Tipo de evento" matInput>
+                            <mat-error>
+                                <span>{{displayMessage.tipoDeEvento}}</span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="3.5%" fxLayoutAlign="left" layout-margin>
+                        <!-- formControl 'cliente' -->
+                        <mat-form-field class="example-full-width" fxFlex="50%">
+                            <mat-label>Cliente</mat-label>
+                            <mat-select formControlName="cliente" (selectionChange)="getSalones()">
+                                <mat-option *ngFor="let cliente of clientes" [value]="cliente._id">{{ cliente.razonSocial }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <span>{{displayMessage.cliente}}</span>
+                            </mat-error>
+                        </mat-form-field>
+                        
+                        <!-- formControl 'dj' -->
+                        <mat-form-field class="example-full-width" fxFlex="25%">
+                            <mat-label>DJ</mat-label>
+                            <input formControlName="dj" placeholder="DJ" matInput>
+                        </mat-form-field>
+                        
+                        <!-- formControl 'responsable' -->
+                        <mat-form-field class="example-full-width" fxFlex="25%">
+                            <mat-label>Responsable</mat-label>
+                            <input formControlName="responsable" placeholder="Responsable" matInput>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="3.5%" fxLayoutAlign="left" layout-margin>
+                        <!-- formControl 'lugar' -->
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Lugar</mat-label>
+                            <mat-select formControlName="lugar" (selectionChange)="getSalones()">
+                                <mat-option *ngFor="let lugar of lugares" [value]="lugar._id">{{ lugar.nombre }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <span>{{displayMessage.lugar}}</span>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <!-- formControl 'salon' -->
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Salón</mat-label>
+                            <mat-select formControlName="salon">
+                                <mat-option *ngFor="let salon of salones" [value]="salon">{{ salon.nombre }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <span>{{displayMessage.salon}}</span>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="3.5%" fxLayoutAlign="left" layout-margin>
+                        <!-- formControl 'fechaEvento' -->
+                        <mat-form-field class="example-full-width">
+                            <input formControlName="fechaEvento" [matDatepicker]="pickerEvento" placeholder="Fecha del evento" matInput>
+                            <mat-datepicker-toggle matSuffix [for]="pickerEvento"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #pickerEvento></mat-datepicker>
+                            <mat-error>
+                                <span>{{displayMessage.fechaEvento}}</span>
+                            </mat-error>
+                        </mat-form-field>
+                        
+                        <!-- formControl 'fechaArmado' -->
+                        <mat-form-field class="example-full-width">
+                            <input formControlName="fechaArmado" [matDatepicker]="pickerArmado" placeholder="Fecha de armado" matInput>
+                            <mat-datepicker-toggle matSuffix [for]="pickerArmado"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #pickerArmado></mat-datepicker>
+                        </mat-form-field>
+                        
+                        <!-- formControl 'fechaDevolucion' -->
+                        <mat-form-field class="example-full-width">
+                            <input formControlName="fechaDevolucion" [matDatepicker]="pickerDevolucion" placeholder="Fecha de devolución"
+                                matInput>
+                            <mat-datepicker-toggle matSuffix [for]="pickerDevolucion"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #pickerDevolucion></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                        <!-- formControl 'promoViernes' -->
+                        <mat-checkbox formControlName="promoViernes">Promo viernes</mat-checkbox>
+
+                </mat-tab>
+            </mat-tab-group>
+
+            <br><mat-divider></mat-divider><br>
+
+            <h3>Resumen</h3>
+
+            <!-- formControl 'valorPack' -->
+            <mat-form-field class="example-full-width">
+                <mat-label>Valor pack</mat-label>
+                <input formControlName="valorPack" placeholder="Valor pack" matInput>
+            </mat-form-field>
+
+            <br>
+
+            <!-- Form submit button -->
+            <mat-card-actions>
+                <button mat-raised-button [disabled]="eventoForm.invalid" type="submit" color="primary">
+                    <mat-icon>save</mat-icon>
+                    Guardar
+                </button>
+            </mat-card-actions>
+
+        </mat-card-content>
+    </form>
+</mat-card>

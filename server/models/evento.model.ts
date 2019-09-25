@@ -28,78 +28,59 @@ const eventoSchema = new mongoose.Schema(
 			required: [ true, 'Property salon of salones is required' ],
 			ref: 'Salon'
 		},
-		fechaHoraEvento: {
+		fechaEvento: {
 			type: Date,
-			required: [ true, 'Property fechaHoraEvento of evento is required' ]
+			required: [ true, 'Property fechaEvento of evento is required' ]
+		},
+		fechaArmado: {
+			type: Date
+		},
+		fechaDevolucion: {
+			type: Date
 		},
 		promoViernes: {
 			type: Boolean,
 			required: [ true, 'Property promoViernes of evento is required' ],
 			default: false
 		},
+		dj: {
+			type: String,
+			minlength: 3,
+			maxlength: 50,
+			trim: true
+		},
+		responsable: {
+			type: String,
+			minlength: 3,
+			maxlength: 50,
+			trim: true
+		},
 		valorPack: {
 			type: Number,
 			required: [ true, 'Property valorPack of evento is required' ],
 			min: 0
 		},
-		totalAdicionales: {
+		totalSubtotal: {
 			type: Number,
-			required: [ true, 'Property totalAdicionales of evento is required' ],
+			required: [ true, 'Property totalSubtotal of evento is required' ],
 			min: 0
 		},
-		fechaHoraArmado: {
-			type: Date
+		totalPcioVtaDJ: {
+			type: Number,
+			required: [ true, 'Property totalPcioVtaDJ of evento is required' ],
+			min: 0
 		},
-		fechaHoraDevolucion: {
-			type: Date
+		totales: {
+			totPack_Tecnica: { type: Number },
+			totPack_DJ: { type: Number },
+			totPack_Comision: { type: Number },
+			totAdic_Tecnica: { type: Number },
+			totAdic_DJ: { type: Number },
+			totAdic_Comision: { type: Number },
+			totPackyAdic_Tecnica: { type: Number },
+			totPackyAdic_DJ: { type: Number },
+			totPackyAdic_Comision: { type: Number }
 		},
-		DJ: {
-			type: String,
-			minlength: 3,
-			maxlength: 50,
-			trim: true
-		},
-		Responsable: {
-			type: String,
-			minlength: 3,
-			maxlength: 50,
-			trim: true
-		},
-		adicionales: [
-			{
-				cantidad: {
-					type: Number,
-					required: [ true, 'Property cantidad of adicional is required' ],
-					min: 0
-				},
-				equipo: {
-					type: mongoose.Schema.Types.ObjectId,
-					required: [ true, 'Property equipo of adicional is required' ],
-					ref: 'Equipo'
-				},
-				pcioUnit: {
-					type: Number,
-					required: [ true, 'Property pcioUnit of adicional is required' ],
-					min: 0
-				},
-				subtotal: {
-					type: Number,
-					required: [ true, 'Property subtotal of adicional is required' ],
-					min: 0
-				},
-				pcioVtaDJ: {
-					type: Number,
-					required: [ true, 'Property pcioVtaDJ of adicional is required' ],
-					min: 0
-				},
-				observaciones: {
-					type: String,
-					minlength: 3,
-					maxlength: 50,
-					trim: true
-				}
-			}
-		],
 		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Usuario'

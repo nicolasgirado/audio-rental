@@ -44,7 +44,7 @@ abstract class BaseCtrl {
 			if (!doc) {
 				return res.status(404).send({ error: `Document with id ${req.params.id} was not found!` });
 			}
-			res.status(200).send('Document succesfully updated!');
+			res.status(200).send();
 		} catch (err) {
 			return res.status(400).send({ error: err.message });
 		}
@@ -57,7 +57,7 @@ abstract class BaseCtrl {
 			if (!doc) {
 				return res.status(404).send({ error: `Document with id ${req.params.id} was not found!` });
 			}
-			res.status(200).send('Document succesfully deleted!');
+			res.status(200).send();
 		} catch (err) {
 			return res.status(400).send({ error: err.message });
 		}

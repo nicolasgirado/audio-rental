@@ -1,0 +1,10 @@
+<h3 mat-dialog-title><strong>{{ title }}</strong></h3>
+
+<mat-dialog-content>
+    <p>{{ message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" mat-dialog-close>No</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Sí</button>
+</mat-dialog-actions>

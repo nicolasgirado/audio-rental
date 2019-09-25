@@ -1,6 +1,8 @@
 // Angular
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FlexLayoutModule } from '@angular/flex-layout';
 // Angular Material
 import { A11yModule } from '@angular/cdk/a11y';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -45,11 +47,70 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 // Pipes
 import { MyCurrencyPipe } from './my-currency.pipe';
+import { DataTableComponent } from './data-table/data-table.component';
+import { DialogBoxComponent } from './dialog-box/dialog-box.component';
+import { UdcsComponent } from './udcs/udcs.component';
+import { UdcDialogComponent } from './udcs/udc-dialog/udc-dialog.component';
 
 @NgModule({
-	declarations: [ MyCurrencyPipe ],
-	imports: [ CommonModule ],
+	declarations: [
+		MyCurrencyPipe,
+		DataTableComponent,
+		DialogBoxComponent,
+		UdcsComponent,
+		UdcDialogComponent
+	],
+	entryComponents: [ DialogBoxComponent, UdcsComponent, UdcDialogComponent ],
+	imports: [
+		CommonModule,
+		ReactiveFormsModule,
+		FlexLayoutModule,
+		// Angular Material
+		A11yModule,
+		CdkStepperModule,
+		CdkTableModule,
+		CdkTreeModule,
+		DragDropModule,
+		MatAutocompleteModule,
+		MatBadgeModule,
+		MatBottomSheetModule,
+		MatButtonModule,
+		MatButtonToggleModule,
+		MatCardModule,
+		MatCheckboxModule,
+		MatChipsModule,
+		MatStepperModule,
+		MatDatepickerModule,
+		MatDialogModule,
+		MatDividerModule,
+		MatExpansionModule,
+		MatGridListModule,
+		MatIconModule,
+		MatInputModule,
+		MatListModule,
+		MatMenuModule,
+		MatNativeDateModule,
+		MatPaginatorModule,
+		MatProgressBarModule,
+		MatProgressSpinnerModule,
+		MatRadioModule,
+		MatRippleModule,
+		MatSelectModule,
+		MatSidenavModule,
+		MatSliderModule,
+		MatSlideToggleModule,
+		MatSnackBarModule,
+		MatSortModule,
+		MatTableModule,
+		MatTabsModule,
+		MatToolbarModule,
+		MatTooltipModule,
+		MatTreeModule,
+		PortalModule,
+		ScrollingModule
+	],
 	exports: [
+		DataTableComponent,
 		MyCurrencyPipe,
 		// Angular Material
 		A11yModule,

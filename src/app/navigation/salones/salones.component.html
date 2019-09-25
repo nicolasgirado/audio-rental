@@ -1,0 +1,8 @@
+<mat-dialog-content>
+    <app-data-table (openDialogEvent)="openDialog($event)" [pageTitle]="data.pageTitle" [modelName]="data.modelName"
+        [tableData]="tableData" [columnHeader]="columnHeader"></app-data-table>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

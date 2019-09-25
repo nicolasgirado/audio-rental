@@ -8,7 +8,7 @@ export const tokenValidationAuth = async (req, res, next) => {
 		const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET);
 		const usuario = await Usuario.findOne({ _id: decodedToken.usuario._id, 'tokens.token': token });
 		if (!usuario) {
-			throw Error('User authentication failed!');
+			throw Error('User authentication error!');
 		}
 		req.token = token;
 		req.usuario = usuario;

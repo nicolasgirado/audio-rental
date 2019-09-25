@@ -97,6 +97,15 @@ usuarioSchema.statics.findByCredentials = async (email, password) => {
 	return usuario;
 };
 
+// Buscar usuario por token
+usuarioSchema.statics.findByToken = async (token) => {
+	const usuario = await Usuario.findOne({ token });
+	if (!usuario) {
+		throw new Error('Wrong usuario token!');
+	}
+	return usuario;
+};
+
 // Ocultar password y tokens de los envíos JSON
 usuarioSchema.methods.toJSON = function() {
 	const usuario = this;

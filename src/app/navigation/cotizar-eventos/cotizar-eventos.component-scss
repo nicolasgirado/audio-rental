@@ -3,12 +3,6 @@ mat-card {
 	min-height: 50px;
 }
 
-.tabEncabezado {
-	display: flex;
-	flex-direction: column;
-	padding: 20px;
-}
-
 .tabAdicionales {
 	display: flex;
 	flex-direction: column;

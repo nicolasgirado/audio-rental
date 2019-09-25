@@ -1,0 +1,54 @@
+<h3 mat-dialog-title><strong>{{ data.title }}</strong></h3>
+
+<!-- formGroup 'lugarDialogForm' -->
+<form [formGroup]="lugarDialogForm" novalidate>
+
+    <mat-dialog-content>
+
+        <!-- formControl 'nombre' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Nombre*</mat-label>
+            <input formControlName="nombre" placeholder="Nombre" matInput>
+            <mat-error><span>{{displayMessage.nombre}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'direccion' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Dirección*</mat-label>
+            <input formControlName="direccion" placeholder="Dirección" matInput>
+            <mat-error><span>{{displayMessage.direccion}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'contacto' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Contacto</mat-label>
+            <input formControlName="contacto" placeholder="Contacto" matInput>
+        </mat-form-field>
+
+        <!-- formControl 'telefonos' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Teléfonos</mat-label>
+            <input formControlName="telefonos" placeholder="Teléfonos" matInput>
+            <mat-error><span>{{displayMessage.telefonos}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'email' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Correo electrónico</mat-label>
+            <input formControlName="email" placeholder="Correo electrónico" matInput>
+            <mat-error><span>{{displayMessage.email}}</span></mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions *ngIf="data.action === 'Update'" align="start">
+        <button mat-raised-button color="accent" (click)="openSalonesDialog()">Salones</button>
+    </mat-dialog-actions>
+
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="close()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="!lugarDialogForm.valid || !lugarDialogForm.dirty" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+
+</form>

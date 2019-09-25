@@ -1,8 +1,9 @@
-export class Usuario {
+import { Resource } from './resource';
+
+export class Usuario extends Resource {
 	nombre: string;
 	email: string;
-	password: string;
-	role?: string;
+	role: string;
+	password?: string;
 	avatar?: string;
-	_id?: string;
 }

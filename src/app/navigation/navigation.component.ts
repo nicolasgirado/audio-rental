@@ -73,6 +73,11 @@ export class NavigationComponent implements OnInit, OnDestroy {
 				]
 			},
 			{
+				title: 'Lugares',
+				icon: 'room',
+				url: '/lugares'
+			},
+			{
 				title: 'Equipos',
 				icon: 'speaker',
 				url: '/equipos'

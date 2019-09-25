@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 /*------------------
-	Schema Rubro
+	Schema Udc
 -------------------*/
 
 const udcSchema = new mongoose.Schema(
@@ -35,6 +35,6 @@ const udcSchema = new mongoose.Schema(
 	}
 );
 
-const UDC = mongoose.model('UDC', udcSchema, 'udcs');
+const Udc = mongoose.model('Udc', udcSchema, 'udcs');
 
-export default UDC;
+export default Udc;

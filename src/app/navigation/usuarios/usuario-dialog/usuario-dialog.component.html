@@ -1,0 +1,49 @@
+<h3 mat-dialog-title><strong>{{ data.title }}</strong></h3>
+
+<!-- formGroup 'usuarioDialogForm' -->
+<form [formGroup]="usuarioDialogForm" novalidate>
+
+    <mat-dialog-content>
+
+        <!-- formControl 'nombre' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Nombre*</mat-label>
+            <input formControlName="nombre" placeholder="Nombre" matInput>
+            <mat-error><span>{{displayMessage.nombre}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'email' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Correo electrónico*</mat-label>
+            <input formControlName="email" placeholder="Correo electrónico" matInput>
+            <mat-error><span>{{displayMessage.email}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'password' -->
+        <mat-form-field *ngIf="data.action === 'Create'" class="example-full-width">
+            <mat-label>Contraseña*</mat-label>
+            <input formControlName="password" placeholder="Contraseña" [type]="hidePassword ? 'password' : 'text'" matInput>
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error><span>{{displayMessage.password}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'role' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Role*</mat-label>
+            <mat-select formControlName="role">
+                <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
+            </mat-select>
+            <mat-error><span>{{displayMessage.role}}</span></mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="close()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="!usuarioDialogForm.valid || !usuarioDialogForm.dirty" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+
+</form>

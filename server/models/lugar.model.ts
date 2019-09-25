@@ -41,7 +41,7 @@ const lugarSchema = new mongoose.Schema(
 			lowercase: true,
 			validate: {
 				validator: (val: string): boolean => {
-					if (!validator.isEmail(val)) {
+					if (val && !validator.isEmail(val)) {
 						return false;
 					}
 				},

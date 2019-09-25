@@ -1,25 +1,18 @@
-export interface Evento {
+import { Resource } from './resource';
+
+export class Evento extends Resource {
 	nombre: string;
 	tipoDeEvento: string;
 	cliente: string;
+	lugar: string;
 	salon: string;
-	fechaHoraEvento: Date;
-	promoViernes: boolean;
-	valorPack: number;
-	totalAdicionales: number;
-	fechaHoraArmado?: Date;
-	fechaHoraDevolucion?: Date;
-	DJ?: string;
+	fechaEvento: Date;
+	fechaArmado?: Date;
+	fechaDevolucion?: Date;
+	promoViernes?: boolean;
+	dj?: string;
 	responsable?: string;
-	adicionales?: [
-		{
-			cantidad?: number;
-			equipo?: string;
-			observaciones?: string;
-			pcioUnit?: number;
-			subtotal?: number;
-			pcioVtaDJ?: number;
-		}
-	];
-	_id?: string;
+	valorPack: number;
+	totalSubtotal: number;
+	totalPcioVtaDJ: number;
 }

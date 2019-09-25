@@ -10,6 +10,7 @@ import { AuthService } from '../services/auth.service';
 	styleUrls: [ './login.component.scss' ]
 })
 export class LoginComponent implements OnInit {
+	hidePassword = true;
 	loginForm: FormGroup;
 	email = new FormControl('', [
 		Validators.required,

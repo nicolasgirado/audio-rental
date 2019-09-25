@@ -1,0 +1,37 @@
+<h3 mat-dialog-title><strong>{{ data.title }}</strong></h3>
+
+<!-- formGroup 'equipoDialogForm' -->
+<form [formGroup]="equipoDialogForm" novalidate>
+
+    <mat-dialog-content>
+
+        <!-- formControl 'descripcion' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Descripción*</mat-label>
+            <input formControlName="descripcion" placeholder="Descripción" matInput>
+            <mat-error><span>{{displayMessage.descripcion}}</span></mat-error>
+        </mat-form-field>
+
+        <!-- formControl 'rubro' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Rubro*</mat-label>
+            <mat-select formControlName="rubro" >
+                <mat-option>
+                    <button mat-icon-button color="accent" (click)="openUdcsDialog('rubros')"><mat-icon>create</mat-icon><strong>Editar rubros</strong></button>
+                </mat-option>
+                <mat-option *ngFor="let rubro of rubros" [value]="rubro._id">
+                    {{ rubro.descripcion }}
+                </mat-option>
+            </mat-select>
+            <mat-error><span>{{displayMessage.rubro}}</span></mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="close()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="!equipoDialogForm.valid || !equipoDialogForm.dirty" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+
+</form>

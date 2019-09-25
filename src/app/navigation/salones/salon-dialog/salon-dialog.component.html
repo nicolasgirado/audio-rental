@@ -1,0 +1,23 @@
+<h3 mat-dialog-title><strong>{{ data.title }}</strong></h3>
+
+<!-- formGroup 'salonDialogForm' -->
+<form [formGroup]="salonDialogForm" novalidate>
+
+    <mat-dialog-content>
+
+        <!-- formControl 'nombre' -->
+        <mat-form-field class="example-full-width">
+            <mat-label>Nombre*</mat-label>
+            <input formControlName="nombre" placeholder="Nombre" matInput>
+            <mat-error><span>{{displayMessage.nombre}}</span></mat-error>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="close()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit"
+            [disabled]="!salonDialogForm.valid || !salonDialogForm.dirty" (click)="save()">Guardar</button>
+    </mat-dialog-actions>
+
+</form>
